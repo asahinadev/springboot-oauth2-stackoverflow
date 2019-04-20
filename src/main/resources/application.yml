@@ -1,0 +1,24 @@
+server:
+  port: 9002
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          stackoverflow:
+            provider:      "stackoverflow"
+            client-name:   "Stackoverflow"
+            client-id:     "[env]"
+            client-secret: "[env]"
+            redirect-uri:  "{baseUrl}/login/oauth2/code/{registrationId}"
+            authorization-grant-type: "authorization_code"
+            scope:
+              - read_inbox
+              - no_expiry
+        provider: 
+          stackoverflow:
+            authorization-uri:   "https://stackoverflow.com/oauth"
+            token-uri:           "https://stackoverflow.com/oauth/access_token"
+            user-info-uri:       "https://api.stackexchange.com/2.2/me?order=desc&sort=reputation&site=stackoverflow"
+            user-name-attribute: "user_id"
