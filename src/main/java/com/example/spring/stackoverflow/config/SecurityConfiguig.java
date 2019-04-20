@@ -1,16 +1,35 @@
 package com.example.spring.stackoverflow.config;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.oauth2.client.userinfo.CustomUserTypesOAuth2UserService;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
+import org.springframework.security.oauth2.client.userinfo.DelegatingOAuth2UserService;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+
+import com.example.spring.stackoverflow.oauth2.config.StackoverflowProperties;
+import com.example.spring.stackoverflow.oauth2.service.StackoverflowUserService;
+import com.example.spring.stackoverflow.oauth2.token.AccessTokenResponseClient;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguig
 		extends WebSecurityConfigurerAdapter {
+
+	@Autowired
+	StackoverflowProperties stackoverflowProperties;
 
 	@Override
 	public void configure(WebSecurity web)
@@ -65,12 +84,36 @@ public class SecurityConfiguig
 				.redirectionEndpoint()
 				.and()
 
-				// ユーザー情報エンドポイント
-				.userInfoEndpoint()
+				// アクセストークンエンドポイント
+				.tokenEndpoint()
+				.accessTokenResponseClient(new AccessTokenResponseClient())
 				.and()
 
-		;
+				// ユーザー情報エンドポイント
+				.userInfoEndpoint()
+				.userService(userService())
+				.and();
 
+	}
+
+	private DelegatingOAuth2UserService<OAuth2UserRequest, OAuth2User> userService() {
+		Map<String, Class<? extends OAuth2User>> customUser = new HashMap<>();
+
+		List<OAuth2UserService<OAuth2UserRequest, OAuth2User>> userServices = new ArrayList<>();
+
+		// Stackoverflow 専用
+		userServices.add(new StackoverflowUserService(stackoverflowProperties));
+
+		// Custom UserService 
+		if (customUser.isEmpty() == false) {
+			userServices.add(new CustomUserTypesOAuth2UserService(customUser));
+		}
+
+		// Default UserService
+		userServices.add(new DefaultOAuth2UserService());
+
+		// 作成
+		return new DelegatingOAuth2UserService<>(userServices);
 	}
 
 }

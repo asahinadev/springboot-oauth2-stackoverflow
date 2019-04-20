@@ -1,5 +1,6 @@
 package com.example.spring.stackoverflow.oauth2.user;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -12,14 +13,18 @@ import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class DropboxUser
+public class StackoverflowUser
 		implements OAuth2User {
+
+	@JsonProperty("items")
+	List<Map<String, Object>> items = new ArrayList<>();
 
 	@JsonAnySetter
 	Map<String, Object> extraParameters = new HashMap<>();
@@ -27,11 +32,10 @@ public class DropboxUser
 	@Override
 	@JsonIgnore
 	public String getName() {
-		return String.valueOf(getExtraParameters().get("account_id"));
-	}
-
-	public String getEmail() {
-		return String.valueOf(getExtraParameters().get("email"));
+		if (items.isEmpty()) {
+			return null;
+		}
+		return String.valueOf(items.get(0).get("account_id"));
 	}
 
 	@Override
@@ -45,11 +49,14 @@ public class DropboxUser
 	@Override
 	@JsonIgnore
 	public Map<String, Object> getAttributes() {
-		return this.getExtraParameters();
+		return this.getItems().get(0);
 	}
 
 	public String toString() {
-		return getExtraParameters().toString();
+		if (this.getItems().isEmpty()) {
+			return "";
+		}
+		return this.getItems().get(0).toString();
 	}
 
 }

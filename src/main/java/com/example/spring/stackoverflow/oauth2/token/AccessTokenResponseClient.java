@@ -108,10 +108,18 @@ public class AccessTokenResponseClient
 
 		TokenType tokenType = token.getOauthTOkenType();
 
+		String accessToken = token.getAccessToken();
 		switch (clientRegistration.getRegistrationId()) {
 
 		case "linkedin":
+			log.warn("tokenValue cannot be empty [linkedin]");
 			tokenType = TokenType.BEARER;
+			break;
+
+		case "stackoverflow":
+			log.warn("tokenValue cannot be empty [stackoverflow]");
+			tokenType = TokenType.BEARER;
+
 			break;
 
 		default:
@@ -132,13 +140,22 @@ public class AccessTokenResponseClient
 			additionalParameters.put("account_id", token.getAttributes().get("account_id"));
 			break;
 
+		case "stackoverflow":
+			additionalParameters.put("access_token", token.getAccessToken());
+			break;
+
 		default:
 			break;
 
 		}
 
-		return OAuth2AccessTokenResponse.withToken(
-				token.getAccessToken())
+		log.debug("accessToken    {}", accessToken);
+		log.debug("tokenType      {}", tokenType == null ? "<NULL>" : tokenType.getValue());
+		log.debug("attributes     {}", token.getAttributes());
+		log.debug("registrationId {}", clientRegistration.getRegistrationId());
+
+		return OAuth2AccessTokenResponse
+				.withToken(accessToken)
 				.tokenType(tokenType)
 				.expiresIn(expiresIn)
 				.scopes(scopes)

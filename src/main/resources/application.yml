@@ -16,9 +16,20 @@ spring:
             scope:
               - read_inbox
               - no_expiry
+              - private_info
         provider: 
           stackoverflow:
             authorization-uri:   "https://stackoverflow.com/oauth"
-            token-uri:           "https://stackoverflow.com/oauth/access_token"
-            user-info-uri:       "https://api.stackexchange.com/2.2/me?order=desc&sort=reputation&site=stackoverflow"
+            token-uri:           "https://stackoverflow.com/oauth/access_token/json"
+            user-info-uri:       "https://api.stackexchange.com/2.2/me"
             user-name-attribute: "user_id"
+
+app:  oauth2:    stackoverflow:      key: "[env]"
+      order: "desc"
+      sort: "reputation"
+      site: "stackoverflow"
+
+logging:
+  level:
+    com.example: DEBUG
+    org.springframework.web.client.RestTemplate: DEBUG
