@@ -73,6 +73,14 @@ public class SecurityConfig
 
 		http.oauth2Login()
 
+				// 認証エンドポイント
+				.authorizationEndpoint()
+				.and()
+
+				// リダイレクトエンドポイント
+				.redirectionEndpoint()
+				.and()
+
 				// アクセストークンエンドポイント
 				.tokenEndpoint()
 				.accessTokenResponseClient(accessTokenResponseClient())
@@ -81,7 +89,6 @@ public class SecurityConfig
 				// ユーザー情報エンドポイント
 				.userInfoEndpoint()
 				.userService(oauth2UserService());
-
 	}
 
 	OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient() {
