@@ -32,10 +32,12 @@ public class StackoverflowUser
 	@Override
 	@JsonIgnore
 	public String getName() {
-		if (items.isEmpty()) {
-			return null;
-		}
 		return String.valueOf(items.get(0).get("account_id"));
+	}
+
+	@JsonIgnore
+	public String getEmail() {
+		return getName() + "@exchange.com";
 	}
 
 	@Override
@@ -53,10 +55,7 @@ public class StackoverflowUser
 	}
 
 	public String toString() {
-		if (this.getItems().isEmpty()) {
-			return "";
-		}
-		return this.getItems().get(0).toString();
+		return this.getItems().toString();
 	}
 
 }

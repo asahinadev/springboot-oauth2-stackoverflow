@@ -1,5 +1,14 @@
 server:
   port: 9002
+  ssl:
+    key-store:          "classpath:keystore.p12"
+    key-store-password: "12345678"
+    key-store-type:     "PKCS12"
+    key-alias:          "tomcat"
+
+# env settings
+# spring.security.oauth2.client.registration.stackoverflow.client-id
+# spring.security.oauth2.client.registration.stackoverflow.client-secret
 
 spring:
   security:
@@ -9,10 +18,14 @@ spring:
           stackoverflow:
             provider:      "stackoverflow"
             client-name:   "Stackoverflow"
+            
             client-id:     "[env]"
             client-secret: "[env]"
             redirect-uri:  "{baseUrl}/login/oauth2/code/{registrationId}"
+            
             authorization-grant-type: "authorization_code"
+            client-authentication-method: "post"
+            
             scope:
               - read_inbox
               - no_expiry
@@ -21,13 +34,9 @@ spring:
           stackoverflow:
             authorization-uri:   "https://stackoverflow.com/oauth"
             token-uri:           "https://stackoverflow.com/oauth/access_token/json"
-            user-info-uri:       "https://api.stackexchange.com/2.2/me"
+            user-info-uri:       "https://api.stackexchange.com/2.2/me?order=desc&sort=reputation&site=stackoverflow&key=ffEILONqqTdrvica8LpCZA(("
             user-name-attribute: "user_id"
-
-app:  oauth2:    stackoverflow:      key: "[env]"
-      order: "desc"
-      sort: "reputation"
-      site: "stackoverflow"
+            user-info-authentication-method: "query"
 
 logging:
   level:

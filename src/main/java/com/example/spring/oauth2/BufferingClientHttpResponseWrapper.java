@@ -1,4 +1,4 @@
-package com.example.spring.stackoverflow.oauth2.interceptor;
+package com.example.spring.oauth2;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
